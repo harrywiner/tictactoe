@@ -1,24 +1,44 @@
 from pydantic import BaseModel
 
-class Board(BaseModel):
-    stateX: int
-    stateO: int
-    
-    PLAYER_X = bool(0)
-    PLAYER_O = bool(1)
-    
-    NO_RESULT = 0
-    DRAW = 1
-    X_WIN = 2
-    O_WIN = 3
-    
-    board_len=3
-    
+class Board():
+    def __init__(self, state="", board=None):
+        self.stateX = 0
+        self.stateO = 0
+
+        self.PLAYER_X = bool(0)
+        self.PLAYER_O = bool(1)
+        self.to_move = self.PLAYER_X
+            
+        self.NO_RESULT = 0
+        self.DRAW = 1
+        self.X_WIN = 2
+        self.O_WIN = 3
+        
+        self.board_len=3
+
+        self.STRING_REPRESENTATION = {
+                   self. PLAYER_X: "X",
+                    self.PLAYER_O: "O",
+                    "empty": "-"
+                }
+        if state != "":
+            for i, c in enumerate(state):
+                if(c == self.STRING_REPRESENTATION[self.PLAYER_X]):
+                    self.set_index_in_binary_string(i, self.PLAYER_X)
+                elif c == self.STRING_REPRESENTATION[self.PLAYER_O]:
+                    self.set_index_in_binary_string(i, self.PLAYER_O)
+            pass
+        elif board is not None:
+            self.stateO = board.stateO
+            self.stateX = board.stateX
+
     win_masks=[
         292,146,73,
         448,56,7,
         273,84
-    ]
+    ]    
+    
+    
     def get_legal_moves(self):
         moves = []
         state = self.stateX | self.stateO
@@ -28,12 +48,44 @@ class Board(BaseModel):
                 if mask & state != mask:
                     moves.append((i, j))
         return moves
-    def add_move_to_state(self, state, move):
-        state |= (1 << (move[0] + move[1] * self.board_len))
-    def make_move(self, move: tuple[int, int], player: bool):
-        add_move_to_state(self.stateX if player == self.PLAYER_X else self.stateO, move)
-    def __str__(self):
+    def get_all_successors(player: bool):
+        pass
+    def get_successor(self, move):
+        newboard = Board(board=self)
+        newboard.make_move(move)
+        return newboard
+
+    def set_index_in_binary_string(self, index, player):
+        if(player == self.PLAYER_X):
+            self.stateX |= (1 << index)
+        else:
+            self.stateO |= (1 << index)
+    def set_move(self, move, player):
+        self.set_index_in_binary_string(move[0] + move[1] * self.board_len, self.to_move)
+    def make_move(self, move: tuple[int, int]):
+        self.set_move(move, self.to_move)
+        self.to_move = not self.to_move
+    
+
+    def bin(self):
         return f"X's: {'{0:b}'.format(self.stateX)}, O's: {'{0:b}'.format(self.stateO)}, Filled: {'{0:b}'.format(self.stateX | self.stateO)}"
+    def __str__(self):        
+        output = ""
+        for i in range(self.board_len):
+            curr = ""
+            for j in range(self.board_len):
+                mask = 2 ** (i + j * self.board_len)
+                if (self.stateX & mask) == mask:
+                    curr += self.STRING_REPRESENTATION[self.PLAYER_X]
+                elif (self.stateO & mask) == mask:
+                    curr += self.STRING_REPRESENTATION[self.PLAYER_O]
+                else:
+                    curr += self.STRING_REPRESENTATION["empty"]
+            output += curr + "\n"
+        return output
+
+    def __iter__(self):
+        pass
     
     def result(self):
         if   any([w == w & self.stateO for w in self.win_masks]): return self.O_WIN
@@ -50,25 +102,35 @@ class Eval(BaseModel):
         self.score += other.score
         self.nodes += other.nodes
         return self
-    
+    def __add__(self, other):
+        return Eval(score=self.score + other.score, nodes=self.nodes + other.nodes)
+    def average(self):
+        return self.score / self.nodes
+
     def __str__(self):
         return f"Score: {self.score} | Nodes: {self.nodes}"
     
-xwin = Board(stateX=0, stateO=0)
-xwin.make_move((1,1), xwin.PLAYER_X)
-xwin.make_move((0,0), xwin.PLAYER_O)
-xwin.make_move((1,0), xwin.PLAYER_X)
-xwin.make_move((0,1), xwin.PLAYER_O)
-xwin.make_move((1,2), xwin.PLAYER_X)
+xwin = Board()
+xwin.make_move((1,1))
+xwin.make_move((0,0))
+xwin.make_move((1,0))
+xwin.make_move((0,1))
+xwin.make_move((1,2))
+print(xwin.bin())
+print(xwin)
 assert(xwin.result() == xwin.X_WIN)
-xwin = Board(stateX=0, stateO=0)
-xwin.make_move((1,1), xwin.PLAYER_X)
-xwin.make_move((1,0), xwin.PLAYER_O)
-xwin.make_move((0,0), xwin.PLAYER_X)
-xwin.make_move((0,1), xwin.PLAYER_O)
-xwin.make_move((2,2), xwin.PLAYER_X)
+xwin = Board()
+xwin.make_move((1,1))
+xwin.make_move((1,0))
+xwin.make_move((0,0))
+xwin.make_move((0,1))
+xwin.make_move((2,2))
 assert(xwin.result() == xwin.X_WIN)
 
-no_result = Board(stateX=0, stateO=0)
+no_result = Board()
 assert(no_result.result() == no_result.NO_RESULT)
 
+
+in_test = Board(state="XX-00X--0-")
+
+in_test = Board(state="-OX-XOOX-")
