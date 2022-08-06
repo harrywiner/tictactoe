@@ -1,4 +1,4 @@
-
+from pydantic import BaseModel
 
 class Board(BaseModel):
     stateX: int
@@ -28,12 +28,10 @@ class Board(BaseModel):
                 if mask & state != mask:
                     moves.append((i, j))
         return moves
+    def add_move_to_state(self, state, move):
+        state |= (1 << (move[0] + move[1] * self.board_len))
     def make_move(self, move: tuple[int, int], player: bool):
-        if player == PLAYER_X:
-            self.stateX |= (1 << (move[0] + move[1] * self.board_len))
-        elif player == PLAYER_O:
-            self.stateO |= (1 << (move[0] + move[1] * self.board_len))
-        pass
+        add_move_to_state(self.stateX if player == self.PLAYER_X else self.stateO, move)
     def __str__(self):
         return f"X's: {'{0:b}'.format(self.stateX)}, O's: {'{0:b}'.format(self.stateO)}, Filled: {'{0:b}'.format(self.stateX | self.stateO)}"
     
@@ -57,19 +55,20 @@ class Eval(BaseModel):
         return f"Score: {self.score} | Nodes: {self.nodes}"
     
 xwin = Board(stateX=0, stateO=0)
-xwin.make_move((1,1), PLAYER_X)
-xwin.make_move((0,0), PLAYER_O)
-xwin.make_move((1,0), PLAYER_X)
-xwin.make_move((0,1), PLAYER_O)
-xwin.make_move((1,2), PLAYER_X)
+xwin.make_move((1,1), xwin.PLAYER_X)
+xwin.make_move((0,0), xwin.PLAYER_O)
+xwin.make_move((1,0), xwin.PLAYER_X)
+xwin.make_move((0,1), xwin.PLAYER_O)
+xwin.make_move((1,2), xwin.PLAYER_X)
 assert(xwin.result() == xwin.X_WIN)
 xwin = Board(stateX=0, stateO=0)
-xwin.make_move((1,1), PLAYER_X)
-xwin.make_move((1,0), PLAYER_O)
-xwin.make_move((0,0), PLAYER_X)
-xwin.make_move((0,1), PLAYER_O)
-xwin.make_move((2,2), PLAYER_X)
+xwin.make_move((1,1), xwin.PLAYER_X)
+xwin.make_move((1,0), xwin.PLAYER_O)
+xwin.make_move((0,0), xwin.PLAYER_X)
+xwin.make_move((0,1), xwin.PLAYER_O)
+xwin.make_move((2,2), xwin.PLAYER_X)
 assert(xwin.result() == xwin.X_WIN)
 
 no_result = Board(stateX=0, stateO=0)
 assert(no_result.result() == no_result.NO_RESULT)
+
