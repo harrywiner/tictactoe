@@ -31,6 +31,7 @@ class Board():
         elif board is not None:
             self.stateO = board.stateO
             self.stateX = board.stateX
+            self.to_move = board.to_move
 
     win_masks=[
         292,146,73,
