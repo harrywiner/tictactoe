@@ -1,7 +1,7 @@
 from library import Board, Eval
 from typing import List
 
-def get_best_move(board: Board) -> tuple((int, int)):
+def get_best_move(board: Board) -> tuple((tuple((int, int)), Eval)):
     moves = board.get_legal_moves()
     best_move = (0, 0)
     best_eval = 0.0
@@ -11,7 +11,7 @@ def get_best_move(board: Board) -> tuple((int, int)):
         if E.average() > best_eval:
             best_move = m
             best_eval = E.average()
-    return best_move
+    return best_move, best_eval
 
 def max_agg(evals: List[Eval]) -> Eval:
     maximum = evals[0]
@@ -51,6 +51,8 @@ def evaluate(board: Board) -> float:
 
 if __name__ == "__main__":
     eval_test_1 = Board(state="XX-OOX--O-")
-    print(get_best_move(eval_test_1))
+    move_1, eval_1 = get_best_move(eval_test_1)
+    print(f"Best Move: {move_1}, best eval: {eval_1}")
     eval_test_2 = Board(state="-OX-XOOX-")
-    print(get_best_move(eval_test_2))
+    move_2, eval_2 = get_best_move(eval_test_2)
+    print(f"Best Move: {move_2}, best eval: {eval_2}")
