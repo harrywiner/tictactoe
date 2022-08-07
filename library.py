@@ -75,7 +75,7 @@ class Board():
         for i in range(self.board_len):
             curr = ""
             for j in range(self.board_len):
-                mask = 2 ** (i + j * self.board_len)
+                mask = 2 ** (j + i * self.board_len)
                 if (self.stateX & mask) == mask:
                     curr += self.STRING_REPRESENTATION[self.PLAYER_X]
                 elif (self.stateO & mask) == mask:

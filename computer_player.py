@@ -4,26 +4,28 @@ from typing import List
 def get_best_move(board: Board) -> tuple((tuple((int, int)), Eval)):
     moves = board.get_legal_moves()
     best_move = (0, 0)
-    best_eval = 0.0
+    best_eval = Eval(score=0,nodes=0)
     for m in moves:
         candidate = board.get_successor(m)
         E = evaluate(candidate)
-        if E.average() > best_eval:
+        if E.score > best_eval.score:
             best_move = m
-            best_eval = E.average()
+            best_eval = E
     return best_move, best_eval
 
 def max_agg(evals: List[Eval]) -> Eval:
     maximum = evals[0]
     for e in evals:
         if e.score > maximum.score:
-            maximum = e
+            maximum.score = e.score
+        maximum.nodes += e.score
     return maximum
 def min_agg(evals: List[Eval]) -> Eval:
     minimum = evals[0]
-    for e in evals:
+    for e in evals[1:]:
         if e.score < minimum.score:
-            minimum = e
+            minimum.score = e.score
+        minimum.nodes += e.score
     return minimum
 def sum_agg(evals: List[Eval]) -> Eval:
     total = evals[0]
@@ -49,10 +51,4 @@ def evaluate(board: Board) -> float:
         return max_agg(evals)
     
 
-if __name__ == "__main__":
-    eval_test_1 = Board(state="XX-OOX--O-")
-    move_1, eval_1 = get_best_move(eval_test_1)
-    print(f"Best Move: {move_1}, best eval: {eval_1}")
-    eval_test_2 = Board(state="-OX-XOOX-")
-    move_2, eval_2 = get_best_move(eval_test_2)
-    print(f"Best Move: {move_2}, best eval: {eval_2}")
+
