@@ -1,4 +1,4 @@
-from minimax import get_best_move
+from minimax import get_best_move, get_all_evals
 from library import Board
 import re
 import sys
@@ -66,9 +66,16 @@ def run_test(state:str, eval_target:int, move_target=None, debug=False, idx=-1):
     return passed
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
+    if len(sys.argv) >= 2:
         if sys.argv[1] == "comptest":
             run_computer_tests()
+        if sys.argv[1] == "evaluate":
+            if re.match("[XO-]{9}", sys.argv[2]):
+                evals = get_all_evals(Board(state=sys.argv[2]))
+                for m, E in evals:
+                    print(f"Move: {m}, Eval: {E.score}, Searched: {E.nodes}\n")
+            else:
+                print("invalid state")
     else:
         board = Board()
         

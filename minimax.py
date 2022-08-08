@@ -54,6 +54,6 @@ def evaluate(board: Board) -> float:
     
 
 
-def get_all_evals(board: Board) -> List[Eval]:
+def get_all_evals(board: Board):
     moves = board.get_legal_moves()
-    return [evaluate(m) for m in moves]
+    return [(m, evaluate(board.get_successor(m))) for m in moves]
