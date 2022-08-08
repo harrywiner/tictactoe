@@ -1,19 +1,38 @@
-from computer_player import get_best_move
+from minimax import get_best_move
 from library import Board
 import re
 import sys
 from rich import print
+from Players import Human, Minimax
 
 COMPUTER = 0
 HUMAN = 1
 
 def run_computer_tests():
     tests = [{
+        "name": "X 1-move win",
         "state": "XX-OOX--O-",
         "eval": 1.0,
         "move": (2,0)
     },{
+        "name": "2 move draw",
         "state": "-OX-XOOX-",
+        "eval": 0.0,
+        "move": None
+    },{
+        "name": "O 1-move win",
+        "state": "OXXXO----",
+        "eval": -1.0,
+        "move": (2,2)
+    },{
+        "name": "X 2-move win",
+        "state": "-X--OXO--",
+        "eval": 1.0,
+        "move": (2,0)
+    },
+    {
+        "name": "Empty state!",
+        "state": "---------",
         "eval": 0.0,
         "move": None
     },]
@@ -52,25 +71,33 @@ if __name__ == "__main__":
             run_computer_tests()
     else:
         board = Board()
-        PLAYER_ONE = HUMAN
-        PLAYER_TWO = COMPUTER
+        
+        valid = False
+        while not valid:
+            side = input("Which side would you like to play 'X' or 'O'?\n")
+            if side in ["X", "O"]:
+                valid = True
+        if side == "X":
+            PLAYER_ONE = Human()
+            PLAYER_TWO = Minimax()
+        else:
+            PLAYER_ONE = Minimax()
+            PLAYER_TWO = Human()
         
         while (board.result() == board.NO_RESULT):
-            next_move = (0,0)
-            if board.to_move() == board.PLAYER_X:
-                valid = False
-                while (not valid):
-                    move = input("What is your move?")
-
-                    if re.match("\d\,\d", move):
-                        next_move = (int(move[0]), int(move[2]))
-                        valid = True
-                    else:
-                        print("invalid please use format \d\,\d")
-                
-                
+            next_move = (-1,-1)
+            if board.to_move == board.PLAYER_X:
+                next_move = PLAYER_ONE.get_move(board)
             else:
-                get_best_move(board)
+                next_move = PLAYER_TWO.get_move(board)
+            board.make_move(next_move)
+            
+            print(board)
                 
-        
+        if board.result() == board.DRAW:
+            print("[bold] DRAW, well played")
+        elif board.result() == board.X_WIN:
+            print("[green bold] X's win!")
+        elif board.result() == board.O_WIN:
+            print("[pink bold] O's win!")
     pass

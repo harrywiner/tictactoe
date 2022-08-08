@@ -22,11 +22,21 @@ class Board():
                     "empty": "-"
                 }
         if state != "":
+            xcount = 0
+            ocount = 0
             for i, c in enumerate(state):
                 if(c == self.STRING_REPRESENTATION[self.PLAYER_X]):
                     self.set_index_in_binary_string(i, self.PLAYER_X)
+                    xcount += 1
                 elif c == self.STRING_REPRESENTATION[self.PLAYER_O]:
                     self.set_index_in_binary_string(i, self.PLAYER_O)
+                    ocount += 1
+            if xcount == ocount:
+                self.to_move = self.PLAYER_X
+            elif xcount == ocount + 1:
+                self.to_move = self.PLAYER_O
+            else:
+                raise "Illegal input board state"
             pass
         elif board is not None:
             self.stateO = board.stateO
@@ -117,8 +127,7 @@ xwin.make_move((0,0))
 xwin.make_move((1,0))
 xwin.make_move((0,1))
 xwin.make_move((1,2))
-print(xwin.bin())
-print(xwin)
+
 assert(xwin.result() == xwin.X_WIN)
 xwin = Board()
 xwin.make_move((1,1))
@@ -132,6 +141,6 @@ no_result = Board()
 assert(no_result.result() == no_result.NO_RESULT)
 
 
-in_test = Board(state="XX-00X--0-")
+in_test = Board(state="XX-OOX--O-")
 
 in_test = Board(state="-OX-XOOX-")
