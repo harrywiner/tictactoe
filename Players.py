@@ -19,3 +19,8 @@ class Minimax:
         move, p_eval = get_best_move(board)
         print(f"Computer eval: {p_eval.score}; Nodes searched: {p_eval.nodes}")
         return move
+    
+    
+class QLearn:
+    def get_move(self, board):
+        pass

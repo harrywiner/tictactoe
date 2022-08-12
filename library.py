@@ -93,7 +93,7 @@ class Board():
                 else:
                     curr += self.STRING_REPRESENTATION["empty"]
             output += curr + "\n"
-        return output
+        return output[:-1]
 
     def __iter__(self):
         pass

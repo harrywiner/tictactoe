@@ -36,18 +36,7 @@ def run_computer_tests():
         "eval": 0.0,
         "move": None
     },]
-    
-    # eval_test_1 = Board(state="XX-OOX--O-")
-    # move_1, eval_1 = get_best_move(eval_test_1)
-    # print(f"Best Move: {move_1}, best eval: {eval_1}")
-    # assert (move_1 == (2,0) and eval_1 == 1.0)
-    # print("[bold green]Test 1 passed!")
-    # eval_test_2 = Board(state="-OX-XOOX-")
-    # move_2, eval_2 = get_best_move(eval_test_2)
-    # print(f"Best Move: {move_2}, best eval: {eval_2}")
-    # assert (eval_2 == 0.0)
-    # print("[bold green]Test 2 passed!")
-    
+
     for idx, t in enumerate(tests):
         res = run_test(t["state"], t["eval"], t["move"], debug=True, idx=idx)
         if res:
